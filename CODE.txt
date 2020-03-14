@@ -1,0 +1,59 @@
+#include <LiquidCrystal.h>
+// defines pins numbers
+const int tp = 9;
+const int ep = 10;
+const int led= 11;
+const int bz = 12;
+
+// defines variables
+long duration;
+int distance; 
+int safetyDistance;
+LiquidCrystal lcd(1, 2, 4, 5, 6, 7);
+
+void setup() {
+lcd.begin(16,2);
+pinMode(tp, OUTPUT); // Sets the tp as an Output
+pinMode(ep, INPUT); // Sets the ep as an Input
+pinMode(led, OUTPUT);
+pinMode(bz, OUTPUT);
+Serial.begin(9600); // Starts the serial communication
+}
+void loop() {
+// Clears the tp
+digitalWrite(tp, LOW);
+delayMicroseconds(2);
+
+// Sets the tp on HIGH state for 10 micro seconds
+digitalWrite(tp, HIGH);
+delayMicroseconds(10);
+digitalWrite(tp, LOW);
+
+// Reads the ep, returns the sound wave travel time in microseconds
+duration = pulseIn(ep, HIGH);
+
+// Calculating the distance
+distance= duration*0.034/2;
+
+safetyDistance = distance;
+if (safetyDistance<10){
+  digitalWrite(led, HIGH);  
+  digitalWrite(bz,HIGH); 
+  digitalWrite(bz,HIGH);
+  digitalWrite(bz,HIGH);
+}
+else{
+  digitalWrite(led, LOW);
+  digitalWrite(bz,LOW);
+}
+
+lcd.setCursor(0,0); // Sets the location at which subsequent text written to the LCD will be displayed
+lcd.print("Distance: "); // Prints string "Distance" on the LCD
+lcd.print(distance); // Prints the distance value from the sensor
+lcd.print(" cm");
+delay(10);
+// Prints the distance on the Serial Monitor
+Serial.print("Distance: ");
+Serial.println(distance);
+}
+
